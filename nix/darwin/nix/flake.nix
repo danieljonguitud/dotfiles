@@ -68,6 +68,8 @@
 
       system.defaults = {
 	dock.autohide = true;
+	finder.FXPreferredViewStyle = "clmv";
+	NSGlobalDomain._HIHideMenuBar = true;
       };
 
       services.sketchybar = {
