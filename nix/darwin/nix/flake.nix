@@ -26,6 +26,7 @@
         [ pkgs.neovim
 	  pkgs.mkalias
 	  pkgs.aerospace
+	  pkgs.sketchybar
         ];
 
       homebrew = {
@@ -42,6 +43,7 @@
 
       fonts.packages = [
 	 pkgs.nerd-fonts.jetbrains-mono
+	 pkgs.nerd-fonts.hack
       ];
 
       system.activationScripts.applications.text = let
@@ -66,6 +68,14 @@
 
       system.defaults = {
 	dock.autohide = true;
+      };
+
+      services.sketchybar = {
+	enable = true;
+	config = ''
+          sketchybar --reload ~/.dotfiles/sketchybar/sketchybarrc
+	  echo "sketchybar configuration loaded"
+	'';
       };
 
       # Necessary for using flakes on this system.
