@@ -25,6 +25,7 @@
       environment.systemPackages =
         [ pkgs.neovim
 	  pkgs.mkalias
+	  pkgs.aerospace
         ];
 
       homebrew = {
