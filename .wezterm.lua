@@ -61,7 +61,7 @@ config.window_padding = {
 	top = 10,
 	bottom = 0,
 }
-
+config.window_background_opacity = 1.0
 -- Tabs
 config.use_fancy_tab_bar = false
 config.hide_tab_bar_if_only_one_tab = true
