@@ -28,6 +28,7 @@
 	  pkgs.aerospace
 	  pkgs.sketchybar
 	  pkgs.go
+	  pkgs.awscli2
         ];
 
       homebrew = {
