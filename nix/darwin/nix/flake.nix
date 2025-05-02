@@ -29,6 +29,7 @@
 	  pkgs.sketchybar
 	  pkgs.go
 	  pkgs.awscli2
+	  pkgs.aws-sam-cli
         ];
 
       homebrew = {
