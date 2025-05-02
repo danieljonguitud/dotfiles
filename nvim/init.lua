@@ -509,7 +509,6 @@ local servers = {
   pyright = {},
   autotools_ls = {},
   intelephense = {},
-  nil_ls = {},
   -- html = { filetypes = { 'html', 'twig', 'hbs'} },
 
   lua_ls = {
