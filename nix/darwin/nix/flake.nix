@@ -68,9 +68,15 @@
 	      '';
 
       system.defaults = {
-	dock.autohide = true;
+	dock = {
+	  autohide = true;
+	  expose-group-apps = true;
+	};
+	spaces.spans-displays = false;
 	finder.FXPreferredViewStyle = "clmv";
-	NSGlobalDomain._HIHideMenuBar = true;
+	NSGlobalDomain = {
+	  _HIHideMenuBar = true;
+	};
       };
 
       services.sketchybar = {
