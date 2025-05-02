@@ -34,6 +34,7 @@
 	brews = [
 	  "mas"
 	  "powerlevel10k"
+	  "nvm"
 	];
 	casks = [
 	  "firefox"
