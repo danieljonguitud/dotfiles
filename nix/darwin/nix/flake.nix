@@ -82,24 +82,9 @@
       services.sketchybar = {
 	enable = true;
 	config = ''
-          sketchybar --reload ~/.dotfiles/sketchybar/sketchybarrc
+          sketchybar --reload 
 	  echo "sketchybar configuration loaded"
 	'';
-      };
-
-      system.activationScripts.dotfilesSymlinks = {
-	text = ''
-	  echo "Creating dotfile symlinks..." >&2
-
-	  ln -sf ~/.dotfiles/.wezterm.lua ~/.wezterm.lua
-	  ln -sf ~/.dotfiles/.aerospace.toml ~/.aerospace.toml
-	  ln -sf ~/.dotfiles/.zshrc ~/.zshrc
-	  mkdir -p ~/.config/nvim
-	  ln -sf ~/.dotfiles/nvim ~/.config/nvim
-
-	  echo "Dotfile symlinks done." >&2
-	'';
-	after = [ "applications" ];
       };
 
       # Necessary for using flakes on this system.
