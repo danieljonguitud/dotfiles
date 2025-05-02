@@ -27,6 +27,7 @@
 	  pkgs.mkalias
 	  pkgs.aerospace
 	  pkgs.sketchybar
+	  pkgs.go
         ];
 
       homebrew = {
