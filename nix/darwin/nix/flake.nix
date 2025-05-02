@@ -30,6 +30,7 @@
 	  pkgs.go
 	  pkgs.awscli2
 	  pkgs.aws-sam-cli
+	  pkgs.stow
         ];
 
       homebrew = {
