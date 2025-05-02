@@ -87,6 +87,21 @@
 	'';
       };
 
+      system.activationScripts.dotfilesSymlinks = {
+	text = ''
+	  echo "Creating dotfile symlinks..." >&2
+
+	  ln -sf ~/.dotfiles/.wezterm.lua ~/.wezterm.lua
+	  ln -sf ~/.dotfiles/.aerospace.toml ~/.aerospace.toml
+	  ln -sf ~/.dotfiles/.zshrc ~/.zshrc
+	  mkdir -p ~/.config/nvim
+	  ln -sf ~/.dotfiles/nvim ~/.config/nvim
+
+	  echo "Dotfile symlinks done." >&2
+	'';
+	after = [ "applications" ];
+      };
+
       # Necessary for using flakes on this system.
       nix.settings.experimental-features = "nix-command flakes";
 
