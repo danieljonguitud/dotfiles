@@ -8,6 +8,7 @@ fi
 # Aliases
 alias vim="nvim"
 alias python=/usr/bin/python3
+alias drs="darwin-rebuild switch --flake ~/.dotfiles/nix/darwin/nix/"
 
 export AWS_PROFILE=daniel-dev
 
