@@ -33,6 +33,7 @@
 	enable = true;
 	brews = [
 	  "mas"
+	  "powerlevel10k"
 	];
 	casks = [
 	  "firefox"
