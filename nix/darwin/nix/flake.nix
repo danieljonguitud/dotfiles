@@ -82,7 +82,7 @@
       services.sketchybar = {
 	enable = true;
 	config = ''
-          sketchybar --reload 
+          sketchybar --reload ~/.dotfiles/sketchybar/sketchybarrc
 	  echo "sketchybar configuration loaded"
 	'';
       };
