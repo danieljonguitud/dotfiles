@@ -19,9 +19,13 @@
       url = "github:FelixKratz/homebrew-formulae";
       flake = false;
     };
+    homebrew-aerospace = {
+      url = "github:nikitabobko/homebrew-tap";
+      flake = false;
+    };
   };
 
-  outputs = inputs@{ self, nix-darwin, nix-homebrew, homebrew-core, homebrew-cask, homebrew-sketchy, nixpkgs }:
+  outputs = inputs@{ self, nix-darwin, nix-homebrew, homebrew-core, homebrew-cask, homebrew-sketchy, homebrew-aerospace, nixpkgs }:
   let
     configuration = { pkgs, config, ... }: {
       # List packages installed in system profile. To search by name, run:
@@ -29,7 +33,6 @@
       environment.systemPackages =
         [ pkgs.neovim
 	  pkgs.mkalias
-	  pkgs.aerospace
 	  pkgs.go
 	  pkgs.awscli2
 	  pkgs.aws-sam-cli
@@ -48,6 +51,7 @@
 	casks = [
 	  "firefox"
 	  "wezterm"
+	  "aerospace"
 	];
 	onActivation.cleanup = "zap";
       };
@@ -129,6 +133,7 @@
               "homebrew/homebrew-core" = homebrew-core;
   	      "homebrew/homebrew-cask" = homebrew-cask;
 	      "FelixKratz/homebrew-formulae" = homebrew-sketchy;
+	      "nikitabobko/homebrew-tap" = homebrew-aerospace;
             };
 
             # Optional: Enable fully-declarative tap management

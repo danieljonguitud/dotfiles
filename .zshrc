@@ -27,3 +27,4 @@ export NVM_DIR="$HOME/.nvm"
 
 
 #Keys
+export GEMINI_API_KEY=AIzaSyCPJYud1w_AkihouqD5b4e4727q6yHh69k
