@@ -8,7 +8,7 @@ return {
     provider = "gemini",
     behaviour = {
       --- ... existing behaviours
-      enable_cursor_planning_mode = true,   -- enable cursor planning mode!
+      enable_cursor_planning_mode = true, -- enable cursor planning mode!
     },
     gemini = {
       endpoint = "https://generativelanguage.googleapis.com/v1beta/models",
@@ -16,6 +16,7 @@ return {
       timeout = 30000, -- Timeout in milliseconds
       temperature = 0,
       max_tokens = 8192,
+      disable_tools = true,
     },
     claude = {
       endpoint = "https://api.anthropic.com",

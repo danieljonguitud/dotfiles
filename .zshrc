@@ -8,7 +8,7 @@ fi
 # Aliases
 alias vim="nvim"
 alias python=/usr/bin/python3
-alias drs="darwin-rebuild switch --flake ~/dotfiles/nix/darwin/"
+alias drs="darwin-rebuild switch --flake ~/dotfiles/nix/darwin#simple"
 
 export AWS_PROFILE=daniel-dev
 
@@ -24,3 +24,6 @@ export NVM_DIR="$HOME/.nvm"
 
 # To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
 [[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
+
+
+#Keys
