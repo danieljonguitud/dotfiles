@@ -47,6 +47,7 @@
 	  "powerlevel10k"
 	  "nvm"
 	  "sketchybar"
+	  "borders"
 	];
 	casks = [
 	  "firefox"
