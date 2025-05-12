@@ -53,6 +53,7 @@
 	  "firefox"
 	  "wezterm"
 	  "aerospace"
+	  "mos"
 	];
 	onActivation.cleanup = "zap";
       };
