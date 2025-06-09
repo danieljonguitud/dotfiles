@@ -51,7 +51,6 @@
 	  "borders"
 	];
 	casks = [
-	  "firefox"
 	  "wezterm"
 	  "aerospace"
 	  "mos"
