@@ -38,6 +38,7 @@
 	  pkgs.aws-sam-cli
 	  pkgs.stow
 	  pkgs.ripgrep
+	  pkgs.python310
         ];
 
       homebrew = {
@@ -54,6 +55,8 @@
 	  "wezterm"
 	  "aerospace"
 	  "mos"
+	  "zen-browser"
+	  "raycast"
 	];
 	onActivation.cleanup = "zap";
       };
