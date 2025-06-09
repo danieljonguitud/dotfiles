@@ -90,7 +90,7 @@
 	  autohide = true;
 	  expose-group-apps = true;
 	  persistent-apps = [
-	      "/Applications/Wezterm.app"
+	      "/Applications/WezTerm.app"
 	      "/Applications/Zen.app"
 	      "/System/Applications/Mail.app"
 	      "/System/Applications/Calendar.app"
