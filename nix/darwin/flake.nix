@@ -90,6 +90,12 @@
 	dock = {
 	  autohide = true;
 	  expose-group-apps = true;
+	  persistent-apps = [
+	      "/Applications/Wezterm.app"
+	      "/Applications/Zen.app"
+	      "/System/Applications/Mail.app"
+	      "/System/Applications/Calendar.app"
+	    ];
 	};
 	spaces.spans-displays = false;
 	finder.FXPreferredViewStyle = "clmv";
