@@ -56,6 +56,7 @@
 	  "mos"
 	  "zen-browser"
 	  "raycast"
+	  "homerow"
 	];
 	onActivation.cleanup = "zap";
       };
