@@ -5,33 +5,55 @@ return {
   opts = {
     -- add any opts here
     -- for example
-    provider = "claude",
+    provider = "gemini",
+    cursor_applying_provider = 'groq',
     behaviour = {
       --- ... existing behaviours
       enable_cursor_planning_mode = true, -- enable cursor planning mode!
     },
-    gemini = {
-      endpoint = "https://generativelanguage.googleapis.com/v1beta/models",
-      model = "gemini-2.5-pro-preview-05-06",
-      timeout = 30000, -- Timeout in milliseconds
-      temperature = 0.2,
-      max_tokens = 8192,
-    },
-    claude = {
-      endpoint = "https://api.anthropic.com",
-      model = "claude-sonnet-4-20250514",
-      timeout = 30000, -- Timeout in milliseconds
-      temperature = 0.2,
-      max_tokens = 20480,
-    },
-    openai = {
-      endpoint = "https://api.openai.com/v1",
-      model = "gpt-4o",             -- your desired model (or use gpt-4o, etc.)
-      timeout = 30000,              -- Timeout in milliseconds, increase this for reasoning models
-      temperature = 0,
-      max_completion_tokens = 8192, -- Increase this to include reasoning tokens (for reasoning models)
-      --reasoning_effort = "medium", -- low|medium|high, only used for reasoning models
-    },
+    providers = {
+      openai = {
+        endpoint = "https://api.openai.com/v1",
+        model = "gpt-4o", -- your desired model (or use gpt-4o, etc.)
+        timeout = 30000,  -- Timeout in milliseconds, increase this for reasoning models
+        temperature = 0,
+        extra_request_body = {
+          max_completion_tokens = 8192, -- Increase this to include reasoning tokens (for reasoning models)
+          reasoning_effort = "medium"
+        }
+        --reasoning_effort = "medium", -- low|medium|high, only used for reasoning models
+      },
+      gemini = {
+        endpoint = "https://generativelanguage.googleapis.com/v1beta/models",
+        model = "gemini-2.5-pro",
+        timeout = 30000, -- Timeout in milliseconds
+        extra_request_body = {
+          temperature = 0.2,
+          max_tokens = 20480,
+          reasoning_effort = "medium"
+        }
+      },
+      claude = {
+        endpoint = "https://api.anthropic.com",
+        model = "claude-sonnet-4-20250514",
+        timeout = 30000, -- Timeout in milliseconds
+        extra_request_body = {
+          temperature = 0.2,
+          max_tokens = 20480,
+          reasoning_effort = "medium"
+        }
+      },
+      groq = {
+        __inherited_from = 'openai',
+        api_key_name = 'AVANTE_GROQ_API_KEY',
+        endpoint = 'https://api.groq.com/openai/v1/',
+        model = 'llama-3.3-70b-versatile',
+        extra_request_body = {
+          temperature = 0.5,
+          max_completion_tokens = 32768, -- remember to increase this value, otherwise it will stop generating halfway
+        }
+      },
+    }
   },
   -- if you want to build from source then do `make BUILD_FROM_SOURCE=true`
   build = "make",
