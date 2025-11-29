@@ -39,6 +39,7 @@
 	  pkgs.stow
 	  pkgs.ripgrep
 	  pkgs.python310
+	  pkgs.qmk
         ];
 
       homebrew = {
@@ -48,15 +49,11 @@
 	  "powerlevel10k"
 	  "nvm"
 	  "sketchybar"
-	  "borders"
 	];
 	casks = [
 	  "wezterm"
 	  "aerospace"
 	  "mos"
-	  "zen-browser"
-	  "raycast"
-	  "homerow"
 	];
 	onActivation.cleanup = "zap";
       };
@@ -137,7 +134,7 @@
             enableRosetta = true;
 
             # User owning the Homebrew prefix
-            user = "dj";
+            user = "deejay-air";
 
             # Optional: Declarative tap management
             taps = {

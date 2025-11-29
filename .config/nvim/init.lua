@@ -556,16 +556,16 @@ mason_lspconfig.setup {
 
 -- Set up LSP servers
 for server_name, server_config in pairs(servers) do
-  require('lspconfig')[server_name].setup {
+  vim.lsp.config(server_name, {
     capabilities = capabilities,
     on_attach = on_attach,
     settings = server_config,
     filetypes = (server_config or {}).filetypes,
-  }
+  })
 end
 
 -- Special setup for eslint with auto-fix on save
-require('lspconfig').eslint.setup {
+vim.lsp.config('eslint', {
   capabilities = capabilities,
   on_attach = function(_, bufnr)
     on_attach(_, bufnr) -- Call the standard on_attach function
@@ -574,13 +574,7 @@ require('lspconfig').eslint.setup {
       command = "EslintFixAll"
     })
   end,
-}
-
--- This should be temporary
-vim.opt.tabstop = 4
-vim.opt.shiftwidth = 4
-vim.opt.expandtab = true
-
+})
 
 -- [[ Configure nvim-cmp ]]
 -- See `:help cmp`
