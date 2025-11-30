@@ -3,6 +3,7 @@
 
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixpkgs-unstable";
+    nixpkgs-stable.url = "github:NixOS/nixpkgs/nixpkgs-25.05-darwin";
     nix-darwin.url = "github:nix-darwin/nix-darwin/master";
     nix-darwin.inputs.nixpkgs.follows = "nixpkgs";
     nix-homebrew.url = "github:zhaofengli/nix-homebrew";
@@ -25,9 +26,13 @@
     };
   };
 
-  outputs = inputs@{ self, nix-darwin, nix-homebrew, homebrew-core, homebrew-cask, homebrew-sketchy, homebrew-aerospace, nixpkgs }:
+  outputs = inputs@{ self, nix-darwin, nix-homebrew, homebrew-core, homebrew-cask, homebrew-sketchy, homebrew-aerospace, nixpkgs, nixpkgs-stable }:
   let
-    configuration = { pkgs, config, ... }: {
+    system = "aarch64-darwin";
+    pkgs-stable = import nixpkgs-stable {
+      inherit system;
+    };
+    configuration = { pkgs, pkgs-stable, config, ... }: {
       # List packages installed in system profile. To search by name, run:
       # $ nix-env -qaP | grep wget
       environment.systemPackages =
@@ -35,7 +40,7 @@
 	  pkgs.mkalias
 	  pkgs.go
 	  pkgs.awscli2
-	  pkgs.aws-sam-cli
+	  pkgs-stable.aws-sam-cli
 	  pkgs.stow
 	  pkgs.ripgrep
 	  pkgs.python310
@@ -62,26 +67,6 @@
 	 pkgs.nerd-fonts.jetbrains-mono
 	 pkgs.nerd-fonts.hack
       ];
-
-      system.activationScripts.applications.text = let
-	    env = pkgs.buildEnv {
-	    name = "system-applications";
-	    paths = config.environment.systemPackages;
-	    pathsToLink = "/Applications";
-	  };
-	in
-	  pkgs.lib.mkForce ''
-	  # Set up applications.
-	  echo "setting up /Applications..." >&2
-	  rm -rf /Applications/Nix\ Apps
-	  mkdir -p /Applications/Nix\ Apps
-	  find ${env}/Applications -maxdepth 1 -type l -exec readlink '{}' + |
-	  while read -r src; do
-	    app_name=$(basename "$src")
-	    echo "copying $src" >&2
-	    ${pkgs.mkalias}/bin/mkalias "$src" "/Applications/Nix Apps/$app_name"
-	  done
-	      '';
 
       system.defaults = {
 	dock = {
@@ -116,12 +101,15 @@
 
       # The platform the configuration will be used on.
       nixpkgs.hostPlatform = "aarch64-darwin";
+
+      system.primaryUser = "deejay-air";
     };
   in
   {
     # Build darwin flake using:
     # $ darwin-rebuild build --flake .#simple
     darwinConfigurations."simple" = nix-darwin.lib.darwinSystem {
+      specialArgs = { inherit pkgs-stable; };
       modules = [
 	configuration
 	nix-homebrew.darwinModules.nix-homebrew
@@ -153,6 +141,6 @@
       ];
     };
     # Expose the package set, including overlays, for convenience.
-    darwinPackages = self.darwingConfigurations."simple".pkgs;
+    darwinPackages = self.darwinConfigurations."simple".pkgs;
   };
 }
