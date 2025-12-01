@@ -12,7 +12,7 @@ PLUGIN_DIR="~/.config/sketchybar/plugins"
 # If you are looking for other colors, see the color picker:
 # https://felixkratz.github.io/SketchyBar/config/tricks#color-picker
 
-sketchybar --bar position=bottom height=26 color=0xff16161E topmost=true
+sketchybar --bar position=top height=26 color=0xff16161E topmost=true
 
 ##### Changing Defaults #####
 # We now change some default values, which are applied to all further items.
