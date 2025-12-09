@@ -229,6 +229,10 @@ require('lazy').setup({
 -- See `:help vim.o`
 -- NOTE: You can change these options as you wish!
 
+-- Tab settings
+vim.opt.tabstop = 4       -- Display tabs as 4 spaces wide
+vim.opt.shiftwidth = 4    -- Use 4 spaces for indentation operations
+
 -- Set highlight on search
 vim.o.hlsearch = false
 
@@ -289,6 +293,11 @@ vim.keymap.set('n', '[d', vim.diagnostic.goto_prev, { desc = 'Go to previous dia
 vim.keymap.set('n', ']d', vim.diagnostic.goto_next, { desc = 'Go to next diagnostic message' })
 vim.keymap.set('n', '<leader>e', vim.diagnostic.open_float, { desc = 'Open floating diagnostic message' })
 vim.keymap.set('n', '<leader>q', vim.diagnostic.setloclist, { desc = 'Open diagnostics list' })
+
+-- Toggle inlay hints (Neovim 0.10+)
+vim.keymap.set('n', '<leader>th', function()
+  vim.lsp.inlay_hint.enable(not vim.lsp.inlay_hint.is_enabled())
+end, { desc = '[T]oggle Inlay [H]ints' })
 
 -- [[ Highlight on yank ]]
 -- See `:help vim.highlight.on_yank()`
@@ -487,6 +496,49 @@ local on_attach = function(_, bufnr)
   end, { desc = 'Format current buffer with LSP' })
 end
 
+-- TypeScript specific keymaps (vtsls)
+vim.api.nvim_create_autocmd('LspAttach', {
+  callback = function(args)
+    local client = vim.lsp.get_client_by_id(args.data.client_id)
+    if client and client.name == 'vtsls' then
+      local bufnr = args.buf
+      local opts = function(desc) return { buffer = bufnr, desc = 'TS: ' .. desc } end
+
+      -- Organize imports
+      vim.keymap.set('n', '<leader>co', function()
+        vim.lsp.buf.code_action({
+          apply = true,
+          context = { only = { 'source.organizeImports' }, diagnostics = {} },
+        })
+      end, opts('[C]ode [O]rganize imports'))
+
+      -- Add missing imports
+      vim.keymap.set('n', '<leader>cM', function()
+        vim.lsp.buf.code_action({
+          apply = true,
+          context = { only = { 'source.addMissingImports.ts' }, diagnostics = {} },
+        })
+      end, opts('[C]ode Add [M]issing imports'))
+
+      -- Remove unused imports
+      vim.keymap.set('n', '<leader>cu', function()
+        vim.lsp.buf.code_action({
+          apply = true,
+          context = { only = { 'source.removeUnused.ts' }, diagnostics = {} },
+        })
+      end, opts('[C]ode Remove [U]nused imports'))
+
+      -- Fix all diagnostics
+      vim.keymap.set('n', '<leader>cD', function()
+        vim.lsp.buf.code_action({
+          apply = true,
+          context = { only = { 'source.fixAll.ts' }, diagnostics = {} },
+        })
+      end, opts('[C]ode Fix All [D]iagnostics'))
+    end
+  end,
+})
+
 -- document existing key chains
 require('which-key').add {
   { "<leader>c",  group = "[C]ode" },
@@ -523,8 +575,44 @@ local servers = {
   gopls = {},
   -- rust_analyzer = {},
   -- tsserver = {},
-  vtsls = {},
+  vtsls = {
+    settings = {
+      typescript = {
+        updateImportsOnFileMove = { enabled = "always" },
+        suggest = {
+          completeFunctionCalls = true,
+        },
+        inlayHints = {
+          enumMemberValues = { enabled = true },
+          functionLikeReturnTypes = { enabled = true },
+          parameterNames = { enabled = "literals" },
+          parameterTypes = { enabled = true },
+          propertyDeclarationTypes = { enabled = true },
+          variableTypes = { enabled = false },
+        },
+      },
+      javascript = {
+        updateImportsOnFileMove = { enabled = "always" },
+        suggest = {
+          completeFunctionCalls = true,
+        },
+        inlayHints = {
+          enumMemberValues = { enabled = true },
+          functionLikeReturnTypes = { enabled = true },
+          parameterNames = { enabled = "literals" },
+          parameterTypes = { enabled = true },
+          propertyDeclarationTypes = { enabled = true },
+          variableTypes = { enabled = false },
+        },
+      },
+      vtsls = {
+        enableMoveToFileCodeAction = true,
+        autoUseWorkspaceTsdk = true,
+      },
+    },
+  },
   eslint = {},
+  biome = {},
   pyright = {},
   autotools_ls = {},
   intelephense = {},
@@ -564,17 +652,6 @@ for server_name, server_config in pairs(servers) do
   })
 end
 
--- Special setup for eslint with auto-fix on save
-vim.lsp.config('eslint', {
-  capabilities = capabilities,
-  on_attach = function(_, bufnr)
-    on_attach(_, bufnr) -- Call the standard on_attach function
-    vim.api.nvim_create_autocmd("BufWritePre", {
-      buffer = bufnr,
-      command = "EslintFixAll"
-    })
-  end,
-})
 
 -- [[ Configure nvim-cmp ]]
 -- See `:help cmp`
