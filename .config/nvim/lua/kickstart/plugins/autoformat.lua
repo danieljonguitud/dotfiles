@@ -33,39 +33,51 @@ return {
     -- See `:help LspAttach` for more information about this autocmd event.
     vim.api.nvim_create_autocmd('LspAttach', {
       group = vim.api.nvim_create_augroup('kickstart-lsp-attach-format', { clear = true }),
-      -- This is where we attach the autoformatting for reasonable clients
       callback = function(args)
-        local client_id = args.data.client_id
-        local client = vim.lsp.get_client_by_id(client_id)
         local bufnr = args.buf
 
-        -- Only attach to clients that support document formatting
-        if not client.server_capabilities.documentFormattingProvider then
+        -- Only set up once per buffer
+        if vim.b[bufnr].format_autocmd_set then
           return
         end
-
-        -- Tsserver usually works poorly. Sorry you work with bad languages
-        -- You can remove this line if you know what you're doing :)
-        -- if client.name == 'tsserver' then
-        --  return
-        -- end
+        vim.b[bufnr].format_autocmd_set = true
 
         -- Create an autocmd that will run *before* we save the buffer.
-        --  Run the formatting command for the LSP that has just attached.
+        -- Picks the appropriate formatter based on attached LSPs.
         vim.api.nvim_create_autocmd('BufWritePre', {
-          group = get_augroup(client),
           buffer = bufnr,
           callback = function()
             if not format_is_enabled then
               return
             end
 
-            vim.lsp.buf.format {
-              async = false,
-              filter = function(c)
-                return c.id == client.id
-              end,
-            }
+            local clients = vim.lsp.get_clients({ bufnr = bufnr })
+
+            -- Check what formatters are available
+            local has_biome = false
+            local has_eslint = false
+
+            for _, client in ipairs(clients) do
+              if client.name == 'biome' then has_biome = true end
+              if client.name == 'eslint' then has_eslint = true end
+            end
+
+            -- Pick formatter: biome > eslint > default
+            if has_biome then
+              vim.lsp.buf.code_action({
+                apply = true,
+                context = { only = { 'source.fixAll.biome' }, diagnostics = {} },
+              })
+              vim.lsp.buf.format({ async = false, name = 'biome' })
+            elseif has_eslint then
+              vim.cmd('EslintFixAll')
+            else
+              vim.lsp.buf.code_action({
+                apply = true,
+                context = { only = { 'source.fixAll' }, diagnostics = {} },
+              })
+              vim.lsp.buf.format({ async = false })
+            end
           end,
         })
       end,
