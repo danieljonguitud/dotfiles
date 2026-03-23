@@ -1,12 +1,9 @@
--- Pull in the wezterm API
 local wezterm = require 'wezterm'
 local act = wezterm.action
+local workspaces = require 'workspaces'
 
--- This table will hold the configuration.
 local config = {}
 
--- In newer versions of wezterm, use the config_builder which will
--- help provide clearer error messages
 if wezterm.config_builder then
 	config = wezterm.config_builder()
 end
@@ -26,8 +23,7 @@ function scheme_for_appearance(appearance)
 	end
 end
 
--- This is where you actually apply your config choices
-
+-- Font
 config.font = wezterm.font 'JetBrainsMono Nerd Font'
 config.font_size = 14.0
 config.font_rules = {
@@ -54,6 +50,8 @@ config.font_rules = {
 		),
 	},
 }
+
+-- Appearance
 config.color_scheme = scheme_for_appearance(get_appearance())
 config.window_padding = {
 	left = 10,
@@ -62,13 +60,15 @@ config.window_padding = {
 	bottom = 0,
 }
 config.window_background_opacity = 1.0
+config.window_decorations = "RESIZE"
+
 -- Tabs
 config.use_fancy_tab_bar = false
-config.hide_tab_bar_if_only_one_tab = true
+config.hide_tab_bar_if_only_one_tab = false
 config.show_new_tab_button_in_tab_bar = false
 config.tab_bar_at_bottom = false
 
--- Hotkeys config
+-- Hotkeys
 config.leader = { key = 'a', mods = 'CTRL' }
 config.keys = {
 	{
@@ -143,8 +143,8 @@ config.key_tables = {
 	},
 }
 
-config.window_decorations = "RESIZE"
+-- Workspaces
+workspaces.apply_keys(config)
+workspaces.apply_status_bar()
 
-
--- and finally, return the configuration to wezterm
 return config
