@@ -6,6 +6,8 @@ local M = {}
 
 local working_spinner = { '◐', '◓', '◑', '◒' }
 local spinner_frame = 0
+local spinner_tick = 0
+local SPINNER_SPEED = 3
 
 local icons = {
 	waiting = '◔',
@@ -172,7 +174,11 @@ function M.apply_status_bar()
 			if s == 'working' then any_working = true break end
 		end
 		if any_working then
-			spinner_frame = (spinner_frame + 1) % #working_spinner
+			spinner_tick = spinner_tick + 1
+			if spinner_tick >= SPINNER_SPEED then
+				spinner_tick = 0
+				spinner_frame = (spinner_frame + 1) % #working_spinner
+			end
 		end
 
 		local cells = {}
@@ -188,13 +194,6 @@ function M.apply_status_bar()
 			local label = i .. ':' .. name
 			if icon then
 				label = i .. ':' .. icon .. ' ' .. name
-			end
-
-			-- Separator
-			if #cells > 0 then
-				table.insert(cells, { Foreground = { Color = p.fg_dim } })
-				table.insert(cells, { Background = { Color = p.bg } })
-				table.insert(cells, { Text = ' | ' })
 			end
 
 			-- Pick color based on active state and claude status
