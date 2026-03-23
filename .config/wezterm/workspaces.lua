@@ -4,13 +4,22 @@ local claude = require 'claude_status'
 
 local M = {}
 
+local working_spinner = { '◐', '◓', '◑', '◒' }
+local spinner_frame = 0
+
+local icons = {
+	waiting = '◔',
+	idle = '○',
+}
+
 local palettes = {
 	dark = {
 		bg = '#1a1b26',
 		fg_dim = '#565f89',
 		fg_active = '#1a1b26',
 		active = '#7aa2f7',
-		working = '#e0af68',
+		working = '#7aa2f7',
+		waiting = '#e0af68',
 		idle = '#9ece6a',
 	},
 	light = {
@@ -18,7 +27,8 @@ local palettes = {
 		fg_dim = '#8990b3',
 		fg_active = '#d5d6db',
 		active = '#2e7de9',
-		working = '#8c6c3e',
+		working = '#2e7de9',
+		waiting = '#8c6c3e',
 		idle = '#587539',
 	},
 }
@@ -156,10 +166,29 @@ function M.apply_status_bar()
 
 		local p = M.get_palette()
 
+		-- Advance spinner frame if any workspace is working
+		local any_working = false
+		for _, s in pairs(claude_status) do
+			if s == 'working' then any_working = true break end
+		end
+		if any_working then
+			spinner_frame = (spinner_frame + 1) % #working_spinner
+		end
+
 		local cells = {}
 		for i, name in ipairs(workspace_order) do
 			local is_active = name == active_workspace
+			local cs = claude_status[name]
+			local icon = nil
+			if cs == 'working' then
+				icon = working_spinner[spinner_frame + 1]
+			elseif cs then
+				icon = icons[cs]
+			end
 			local label = i .. ':' .. name
+			if icon then
+				label = i .. ':' .. icon .. ' ' .. name
+			end
 
 			-- Separator
 			if #cells > 0 then
@@ -171,21 +200,15 @@ function M.apply_status_bar()
 			-- Pick color based on active state and claude status
 			local bg = p.bg
 			local fg = p.fg_dim
-			local cs = claude_status[name]
 
-			if is_active and cs == 'working' then
-				bg = p.working
-				fg = p.fg_active
-			elseif is_active and cs == 'idle' then
-				bg = p.idle
+			if is_active and cs then
+				bg = p[cs]
 				fg = p.fg_active
 			elseif is_active then
 				bg = p.active
 				fg = p.fg_active
-			elseif cs == 'working' then
-				fg = p.working
-			elseif cs == 'idle' then
-				fg = p.idle
+			elseif cs then
+				fg = p[cs]
 			end
 
 			table.insert(cells, { Foreground = { Color = fg } })
