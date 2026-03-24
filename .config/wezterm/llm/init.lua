@@ -100,15 +100,48 @@ local function detect_pane_status(pane)
 	return nil
 end
 
+-- Stable per-pane info (only updated when status/repo actually changes)
+local pane_info = {}
+
+-- Get git repo name from a cwd string
+local function get_repo_from_cwd(cwd)
+	if not cwd or cwd == '' then return nil end
+	local dir = cwd:gsub('^file://[^/]*', '')
+	local ok, name = wezterm.run_child_process({
+		'git', '-C', dir, 'rev-parse', '--show-toplevel'
+	})
+	if ok then
+		return name:gsub('%s+$', ''):match('[^/]+$')
+	end
+	return nil
+end
+
+-- Pure lookup — safe to call from format-tab-title
+function M.get_pane_info(pane_id)
+	return pane_info[pane_id]
+end
+
 function M.get_status()
 	local status = {}
 	local cwd = {}
+	local seen = {}
 	for _, mux_win in ipairs(wezterm.mux.all_windows()) do
 		local ws = mux_win:get_workspace()
 		for _, tab in ipairs(mux_win:tabs()) do
 			for _, p in ipairs(tab:panes()) do
+				local pid = p:pane_id()
 				local s = detect_pane_status(p)
+				seen[pid] = true
 				if s then
+					local pane_cwd = tostring(p:get_current_working_dir() or '')
+					-- Only update pane_info if status or repo changed
+					local existing = pane_info[pid]
+					if not existing or existing.status ~= s then
+						local repo = get_repo_from_cwd(pane_cwd)
+						pane_info[pid] = { status = s, repo = repo }
+					elseif not existing.repo then
+						existing.repo = get_repo_from_cwd(pane_cwd)
+					end
 					-- Priority: waiting > working > idle
 					local current = status[ws]
 					if not current
@@ -116,10 +149,19 @@ function M.get_status()
 						or (s == 'working' and current ~= 'waiting')
 					then
 						status[ws] = s
-						cwd[ws] = tostring(p:get_current_working_dir() or '')
+						cwd[ws] = pane_cwd
 					end
+				else
+					-- LLM no longer running in this pane
+					pane_info[pid] = nil
 				end
 			end
+		end
+	end
+	-- Remove closed panes
+	for pid in pairs(pane_info) do
+		if not seen[pid] then
+			pane_info[pid] = nil
 		end
 	end
 	return status, cwd
