@@ -1,6 +1,7 @@
 local wezterm = require 'wezterm'
 local act = wezterm.action
-local claude = require 'claude_status'
+local llm = require 'llm'
+local notifications = require 'notifications'
 
 local M = {}
 
@@ -163,14 +164,14 @@ function M.apply_status_bar()
 		local active_workspace = window:active_workspace()
 		M.sync_order()
 
-		local claude_status, claude_cwd = claude.get_status()
-		claude.check_transitions(window, claude_status, claude_cwd)
+		local llm_status, llm_cwd = llm.get_status()
+		notifications.check_transitions(window, llm_status, llm_cwd)
 
 		local p = M.get_palette()
 
 		-- Advance spinner frame if any workspace is working
 		local any_working = false
-		for _, s in pairs(claude_status) do
+		for _, s in pairs(llm_status) do
 			if s == 'working' then any_working = true break end
 		end
 		if any_working then
@@ -184,7 +185,7 @@ function M.apply_status_bar()
 		local cells = {}
 		for i, name in ipairs(workspace_order) do
 			local is_active = name == active_workspace
-			local cs = claude_status[name]
+			local cs = llm_status[name]
 			local icon = nil
 			if cs == 'working' then
 				icon = working_spinner[spinner_frame + 1]
@@ -218,7 +219,7 @@ function M.apply_status_bar()
 		window:set_right_status(wezterm.format(cells))
 	end)
 
-	claude.apply_focus_handler()
+	notifications.apply_focus_handler()
 end
 
 return M
