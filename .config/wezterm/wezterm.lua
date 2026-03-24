@@ -1,6 +1,7 @@
 local wezterm = require 'wezterm'
 local act = wezterm.action
 local workspaces = require 'workspaces'
+local tabs = require 'tabs'
 
 local config = {}
 
@@ -145,6 +146,7 @@ config.key_tables = {
 
 -- Workspaces
 workspaces.apply_keys(config)
+tabs.apply(workspaces.get_palette)
 workspaces.apply_status_bar()
 
 return config
