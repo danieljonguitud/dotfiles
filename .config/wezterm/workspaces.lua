@@ -216,7 +216,12 @@ function M.apply_status_bar()
 			table.insert(cells, { Text = ' ' .. label .. ' ' })
 		end
 
-		window:set_right_status(wezterm.format(cells))
+		-- Separator between workspaces and tabs
+		table.insert(cells, { Foreground = { Color = p.fg_dim } })
+		table.insert(cells, { Background = { Color = p.bg } })
+		table.insert(cells, { Text = ' │ ' })
+
+		window:set_left_status(wezterm.format(cells))
 	end)
 
 	notifications.apply_focus_handler()
