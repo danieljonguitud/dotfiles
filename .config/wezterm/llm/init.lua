@@ -6,6 +6,7 @@ local M = {}
 local config_dir = wezterm.config_dir
 local providers = {
 	dofile(config_dir .. '/llm/claude.lua'),
+	dofile(config_dir .. '/llm/pi.lua'),
 }
 
 -- Cache for status detection results
@@ -78,7 +79,7 @@ local function detect_pane_status(pane)
 
 	local cached = status_cache[pane_id]
 	if is_cache_valid(cached) then
-		return cached.status
+		return cached.status, cached.provider
 	end
 
 	local title = pane:get_title() or ''
@@ -90,9 +91,10 @@ local function detect_pane_status(pane)
 			if status then
 				status_cache[pane_id] = {
 					status = status,
+					provider = provider,
 					timestamp = os.time() * 1000,
 				}
-				return status
+				return status, provider
 			end
 		end
 	end
@@ -124,21 +126,22 @@ end
 function M.get_status()
 	local status = {}
 	local cwd = {}
+	local provider_by_ws = {}
 	local seen = {}
 	for _, mux_win in ipairs(wezterm.mux.all_windows()) do
 		local ws = mux_win:get_workspace()
 		for _, tab in ipairs(mux_win:tabs()) do
 			for _, p in ipairs(tab:panes()) do
 				local pid = p:pane_id()
-				local s = detect_pane_status(p)
+				local s, provider = detect_pane_status(p)
 				seen[pid] = true
 				if s then
 					local pane_cwd = tostring(p:get_current_working_dir() or '')
 					-- Only update pane_info if status or repo changed
 					local existing = pane_info[pid]
-					if not existing or existing.status ~= s then
+					if not existing or existing.status ~= s or existing.provider ~= provider then
 						local repo = get_repo_from_cwd(pane_cwd)
-						pane_info[pid] = { status = s, repo = repo }
+						pane_info[pid] = { status = s, repo = repo, provider = provider }
 					elseif not existing.repo then
 						existing.repo = get_repo_from_cwd(pane_cwd)
 					end
@@ -150,6 +153,7 @@ function M.get_status()
 					then
 						status[ws] = s
 						cwd[ws] = pane_cwd
+						provider_by_ws[ws] = provider
 					end
 				else
 					-- LLM no longer running in this pane
@@ -164,7 +168,7 @@ function M.get_status()
 			pane_info[pid] = nil
 		end
 	end
-	return status, cwd
+	return status, cwd, provider_by_ws
 end
 
 return M

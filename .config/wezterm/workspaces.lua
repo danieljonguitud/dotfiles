@@ -164,8 +164,8 @@ function M.apply_status_bar()
 		local active_workspace = window:active_workspace()
 		M.sync_order()
 
-		local llm_status, llm_cwd = llm.get_status()
-		notifications.check_transitions(window, llm_status, llm_cwd)
+		local llm_status, llm_cwd, llm_provider = llm.get_status()
+		notifications.check_transitions(window, llm_status, llm_cwd, llm_provider)
 
 		local p = M.get_palette()
 
@@ -197,7 +197,7 @@ function M.apply_status_bar()
 				label = i .. ':' .. icon .. ' ' .. name
 			end
 
-			-- Pick color based on active state and claude status
+			-- Pick color based on active state and LLM agent status
 			local bg = p.bg
 			local fg = p.fg_dim
 
